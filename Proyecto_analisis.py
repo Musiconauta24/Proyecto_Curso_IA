@@ -1,6 +1,7 @@
 import pandas as pd # pip install pandas
 import matplotlib.pyplot as plt # pip install matplotlib
 import seaborn as sns # pip install seaborn
+import numpy as np
 
 
 # Se Crean los dataset para trabajar las bases de datos
@@ -84,23 +85,6 @@ edades_rango.value_counts().plot(kind="pie", labels=labels, title='Diagrama de t
 plt.ylabel('')
 plt.show()
 
-# Diagrama de distribución de edad de los contagiados con dengue
-print ("Distribución de la muestra por rango de edad: ")
-# Definir los rangos y etiquetas de edad
-bins = [1, 18, 30, 45, 60, 100]
-labels = ['1-17', '18-29', '30-44', '45-59', '60-100']
-
-# Agrupar las edades en rangos
-edades_rango = pd.cut(dengue['EDAD'], bins=bins, labels=labels, right=False)
-
-# Mostrar el conteo de personas en cada grupo de edad
-print(edades_rango.value_counts())
-
-# Graficar la distribución por rango de edad
-plt.figure()
-edades_rango.value_counts().plot(kind="pie", labels=labels, title='Diagrama de torta de personas por rango de edad', autopct='%1.1f%%')
-plt.ylabel('')
-plt.show()
 
 #==============================================================
 # filtra la data de contagios por ciudad para cada mes del año
@@ -135,12 +119,11 @@ idx = pd.MultiIndex.from_product([municipios, fechas_completas], names=['MUNICIP
 # Reindexar el dataframe agrupado para incluir todas las fechas y municipios, rellenando con 0 donde no hay casos
 df_dengue_group = df_dengue_group.set_index(['MUNICIPIO REPORTE', 'Fecha']).reindex(idx, fill_value=0).reset_index()
 
-print(df_dengue_group)
 
+#Agragar una columna donde se incluyan las lluvias en ese mes para cada uno de los municipios
 
+df_dengue_group['Lluvia_mm'] = np.random.uniform(0, 400, size=len(df_dengue_group))
+print (df_dengue_group.head())
 
-# Agrupacición de los datos de manera 
-
-#==============================================================
-# Se continua con anális y deporación de los datos de lluvia en el Caquetá
-
+df_dengue_group.to_csv("df_dengue_group.csv", index=False, encoding="utf-8")
+print("✅ df_dengue_group guardado como 'df_dengue_group.csv'")
