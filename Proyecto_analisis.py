@@ -84,9 +84,9 @@ plt.ylabel('')
 plt.show()
 
 
-#==============================================================
-# filtra la data de contagios por ciudad para cada mes del año
-
+# ===============================
+# Procesar DENGUE conservando Mes y Edad
+# ===============================
 
 # Normalizar columnas
 dengue.columns = dengue.columns.str.strip()
@@ -97,16 +97,19 @@ meses_map = {
     'JULIO': 7, 'AGOSTO': 8, 'SEPTIEMBRE': 9, 'OCTUBRE': 10, 'NOVIEMBRE': 11, 'DICIEMBRE': 12
 }
 
-# ---- Procesar DENGUE ----
-df_dengue = dengue[['FECHA REPORTE', 'MES REPORTE', 'MUNICIPIO REPORTE']].copy()
+# ---- Preparar dataframe base ----
+df_dengue = dengue[['FECHA REPORTE', 'MES REPORTE', 'MUNICIPIO REPORTE', 'EDAD']].copy()
 df_dengue['MES_NUM'] = df_dengue['MES REPORTE'].map(meses_map)
 df_dengue['Fecha'] = pd.to_datetime(dict(year=df_dengue['FECHA REPORTE'], month=df_dengue['MES_NUM'], day=1))
 
-# Sumar casos
+# Agrupar casos y edad (promedio)
 df_dengue_group = (
     df_dengue.groupby(['MUNICIPIO REPORTE', 'Fecha'])
-    .size()
-    .reset_index(name='Casos_Dengue')
+    .agg(
+        Casos_Dengue=('EDAD', 'count'),   # Conteo de casos
+        Edad=('EDAD', 'mean')             # Edad promedio en ese mes
+    )
+    .reset_index()
 )
 
 # Crear todas las combinaciones posibles de municipio y fecha
@@ -114,8 +117,24 @@ fechas_completas = pd.date_range(start='2018-01-01', end='2023-12-01', freq='MS'
 municipios = dengue['MUNICIPIO REPORTE'].unique()
 idx = pd.MultiIndex.from_product([municipios, fechas_completas], names=['MUNICIPIO REPORTE', 'Fecha'])
 
-# Reindexar el dataframe agrupado para incluir todas las fechas y municipios, rellenando con 0 donde no hay casos
-df_dengue_group = df_dengue_group.set_index(['MUNICIPIO REPORTE', 'Fecha']).reindex(idx, fill_value=0).reset_index()
+# Reindexar y rellenar datos
+df_dengue_group = (
+    df_dengue_group.set_index(['MUNICIPIO REPORTE', 'Fecha'])
+    .reindex(idx)
+    .reset_index()
+)
+
+# Rellenar Casos_Dengue con 0 donde no hay casos
+df_dengue_group['Casos_Dengue'] = df_dengue_group['Casos_Dengue'].fillna(0).astype(int)
+
+# Agregar columna "Mes" con nombre
+df_dengue_group['Mes'] = df_dengue_group['Fecha'].dt.month.map({
+    1: 'ENERO', 2: 'FEBRERO', 3: 'MARZO', 4: 'ABRIL', 5: 'MAYO', 6: 'JUNIO',
+    7: 'JULIO', 8: 'AGOSTO', 9: 'SEPTIEMBRE', 10: 'OCTUBRE', 11: 'NOVIEMBRE', 12: 'DICIEMBRE'
+})
+
+print(df_dengue_group.head(15))
+
 
 # =========================================
 # Limpieza y verificación de los datos de lluvia
@@ -389,17 +408,53 @@ poblacion_municipios = {
     "SOLITA": 9143,
     "VALPARAISO": 11687
 }
-
 # Agregar columna 'Poblacion' al df_final
 df_final["Poblacion"] = df_final["MUNICIPIO REPORTE"].map(poblacion_municipios)
 
 # Verificar: ver municipios únicos con su población
 print(df_final[["MUNICIPIO REPORTE", "Poblacion"]].drop_duplicates())
 
-#Crear la matriz de correlación
-correlacion_matriz = df_final[['Casos_Dengue', 'Lluvia_mm','Poblacion']].corr()
-sns.heatmap(correlacion_matriz,annot=True,cmap='coolwarm')
-plt.title('Correlación entre variables')
+# Para complementar la medición se agregan los datos de Temperatura
+
+temp =  pd.read_csv('Temperatura.csv',sep=None, engine='python', encoding='latin-1', on_bad_lines='skip')
+print(lluvia.head())
+
+# Aseguramos que las fechas estén en formato datetime
+temp['Fecha'] = pd.to_datetime(temp['Fecha'])
+df_final['Fecha'] = pd.to_datetime(df_final['Fecha'])
+
+# Extraer número de mes en ambos DataFrames
+temp['Mes_Num'] = temp['Fecha'].dt.month
+df_final['Mes_Num'] = df_final['Fecha'].dt.month
+
+# Calcular promedio mensual en temp (agrupado por Mes_Num)
+promedios_temp = (
+    temp.groupby('Mes_Num')["Valor"]  # reemplaza "Valor" por el nombre real de la columna de temperatura en temp
+    .mean()
+    .reset_index()
+    .rename(columns={"Valor": "Temperatura"})
+)
+
+# Hacer el merge con df_final
+df_final = df_final.merge(promedios_temp, on='Mes_Num', how='left')
+
+# Opcional: si ya no necesitas Mes_Num puedes borrarla
+# df_final.drop(columns=['Mes_Num'], inplace=True)
+
+print(df_final.head())
+
+# Crear variables con rezago de 1 mes por municipio
+df_final = df_final.sort_values(["MUNICIPIO REPORTE", "Fecha"])
+
+df_final["Lluvia_mm_lag1"] = df_final.groupby("MUNICIPIO REPORTE")["Lluvia_mm"].shift(1)
+df_final["Temperatura_lag1"] = df_final.groupby("MUNICIPIO REPORTE")["Temperatura"].shift(1)
+
+# Matriz de correlación con los valores del mes anterior
+correlacion_matriz = df_final[['Casos_Dengue', 'Lluvia_mm_lag1', 'Temperatura_lag1', 'Poblacion', 'Edad', 'Mes_Num']].corr()
+
+# Graficar el mapa de calor
+sns.heatmap(correlacion_matriz, annot=True, cmap='coolwarm')
+plt.title('Correlación entre Casos de Dengue y condiciones ambientales del mes anterior')
 plt.show()
 #=======================================================
 #guarda el dataset de los datos del dengue
