@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Predicción de Casos de Dengue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 400px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        #resultado {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Predicción de Casos de Dengue</h1>
+    <form id="formulario">
+        <label for="municipio">Municipio:</label>
+        <select id="municipio" name="municipio" required>
+            <option value="">Seleccione un municipio</option>
+            <option value="FLORENCIA">Florencia</option>
+            <option value="SAN VICENTE DEL CAGUAN">San Vicente del Caguán</option>
+            <option value="CARTAGENA DELCHAIRA">Cartagena del Chairá</option>
+            <option value="EL PAUJIL">El Paujil</option>
+            <option value="SOLANO">Solano</option>
+            <option value="CURILLO">Curillo</option>
+            <option value="PUERTO RICO">Puerto Rico</option>
+            <option value="SAN JOSE DEL FRAGUA">San José del Fragua</option>
+            <option value="MORELIA">Morelia</option>
+            <option value="SOLITA">Solita</option>
+            <option value="BELEN DE LOS ANDAQUIES">Belén de los Andaquíes</option>
+            <option value="LA MONTANITA">La Montañita</option>
+            <option value="EL DONCELLO">El Doncello</option>
+            <option value="ALBANIA">Albania</option>
+            <option value="VALPARAISO">Valparaíso</option>
+            <option value="MILAN">Milán</option>
+        </select>
+
+        <label for="Lluvia_mm_lag1">Lluvia del mes anterior (mm):</label>
+        <input type="number" id="Lluvia_mm_lag1" name="Lluvia_mm_lag1" step="0.1" required>
+
+        <label for="Temperatura_lag1">Temperatura del mes anterior (°C):</label>
+        <input type="number" id="Temperatura_lag1" name="Temperatura_lag1" step="0.1" required>
+
+        <label for="Mes_Num">Mes (1 = Enero, 12 = Diciembre):</label>
+        <input type="number" id="Mes_Num" name="Mes_Num" min="1" max="12" required>
+
+        <button type="submit">Predecir</button>
+    </form>
+
+    <div id="resultado"></div>
+
+    <script>
+        // Diccionario de municipios con su población
+        const poblaciones = {
+            "ALBANIA": 6432,
+            "BELEN DE LOS ANDAQUIES": 11601,
+            "CARTAGENA DELCHAIRA": 33908,
+            "CURILLO": 11737,
+            "EL DONCELLO": 22183,
+            "EL PAUJIL": 20528,
+            "FLORENCIA": 175395,
+            "LA MONTANITA": 23789,
+            "MILAN": 11774,
+            "MORELIA": 3836,
+            "PUERTO RICO": 33447,
+            "SAN JOSE DEL FRAGUA": 15029,
+            "SAN VICENTE DEL CAGUAN": 69214,
+            "SOLANO": 24131,
+            "SOLITA": 9143,
+            "VALPARAISO": 11687
+        };
+
+        document.getElementById("formulario").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const municipio = document.getElementById("municipio").value;
+            const mes = parseInt(document.getElementById("Mes_Num").value);
+
+            if (!municipio || !(municipio in poblaciones)) {
+                document.getElementById("resultado").innerHTML =
+                    `<span style="color:red;">Debe seleccionar un municipio válido</span>`;
+                return;
+            }
+
+            const datos = {
+                Lluvia_mm_lag1: parseFloat(document.getElementById("Lluvia_mm_lag1").value),
+                Temperatura_lag1: parseFloat(document.getElementById("Temperatura_lag1").value),
+                Poblacion: poblaciones[municipio],
+                Mes_Num: parseInt(document.getElementById("Mes_Num").value)
+            };
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(datos)
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    document.getElementById("resultado").innerHTML = 
+                        `<span style="color:red;">Error: ${result.error}</span>`;
+                } else {
+                    document.getElementById("resultado").innerHTML = 
+                        `✅ Municipio: <b>${municipio}</b><br>
+                         📊 Mes del año: <b>${mes}</b><br> 
+                         🔮 Predicción de casos de dengue: <b>${result.prediccion_casos_dengue}</b>`;
+                }
+            } catch (error) {
+                document.getElementById("resultado").innerHTML = 
+                    `<span style="color:red;">Error en la conexión con la API</span>`;
+            }
+        });
+    </script>
+</body>
+</html>

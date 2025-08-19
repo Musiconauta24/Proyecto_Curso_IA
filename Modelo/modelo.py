@@ -24,7 +24,6 @@ df_dengue_group = pd.read_csv("./dengue_mensual.csv")
 
 features = [
     'Poblacion', 
-    'Edad', 
     'Mes_Num', 
     'Lluvia_mm_lag1', 
     'Temperatura_lag1'
