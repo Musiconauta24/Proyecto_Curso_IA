@@ -27,15 +27,25 @@ def predict():
         if f not in data:
             return jsonify({"error": f"Falta el campo requerido: {f}"}), 400
 
-    X_input = np.array([[
-        float(data["Poblacion"]),
-        int(data["Mes_Num"]),
-        float(data["Temperatura_lag1"])
-    ]])
+    # Convertir y validar
+    try:
+        lluvia = float(data["Lluvia_mm_lag1"])
+        temperatura = float(data["Temperatura_lag1"])
+        poblacion = float(data["Poblacion"])
+        mes = int(data["Mes_Num"])
+    except ValueError:
+        return jsonify({"error": "Los valores deben ser numéricos"}), 400
 
-    lluvia_input = [float(data["Lluvia_mm_lag1"])]
+    # 🚨 Validaciones de rango
+    if not (50 <= lluvia <= 500):
+        return jsonify({"error": "La lluvia debe estar entre 50 y 500 mm"}), 400
 
-    yhat = modelo.predict(X_input, lluvia_input)[0]
+    if not (15 <= temperatura <= 40):
+        return jsonify({"error": "La temperatura debe estar entre 15°C y 40°C"}), 400
+
+    # Preparar entrada para el modelo
+    entrada = np.array([[poblacion, mes, temperatura]])
+    yhat = modelo.predict(entrada, [lluvia])[0]  # pasamos lluvia como lista
     yhat = abs(math.floor(yhat))  # entero y positivo
 
     return jsonify({"prediccion_casos_dengue": yhat})
