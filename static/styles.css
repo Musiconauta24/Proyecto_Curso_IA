@@ -1,59 +1,80 @@
+/* ===============================
+   1. Estilos generales de la página
+   =============================== */
 body {
-    font-family: Arial, sans-serif;
-    background: #f9f9f9;
-    margin: 0;
-    padding: 20px;
+    font-family: Arial, sans-serif;   /* Fuente limpia y legible */
+    background: #f9f9f9;              /* Color de fondo gris muy claro */
+    margin: 0;                        /* Quitamos márgenes por defecto */
+    padding: 20px;                    /* Espaciado interno */
 }
 
+/* ===============================
+   2. Encabezados
+   =============================== */
 h1 {
-    color: #2c3e50;
-    text-align: center;
+    color: #2c3e50;                   /* Azul oscuro */
+    text-align: center;               /* Centrado en pantalla */
 }
 
+/* ===============================
+   3. Estilos del formulario
+   =============================== */
 form {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    max-width: 400px;
-    margin: auto;
+    background: #fff;                 /* Fondo blanco */
+    padding: 20px;                    /* Espaciado interno */
+    border-radius: 8px;               /* Bordes redondeados */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra ligera para resaltar */
+    max-width: 400px;                 /* Limita el ancho máximo */
+    margin: auto;                     /* Centra el formulario horizontalmente */
 }
 
-/* 📌 Uniformar estilos de inputs y selects */
+/* ===============================
+   4. Etiquetas de los campos
+   =============================== */
 label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
+    display: block;                   /* Cada label ocupa toda la línea */
+    margin-top: 10px;                 /* Separación superior */
+    font-weight: bold;                /* Texto en negrita */
 }
 
+/* ===============================
+   5. Campos de entrada y selectores
+   =============================== */
 select,
 input[type="number"],
 button {
-    width: 100%;           /* 🔥 que todos tengan el mismo ancho */
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box; /* 🔥 asegura que padding no altere el tamaño */
-    font-size: 14px;
+    width: 100%;                      /* Todos ocupan el mismo ancho */
+    padding: 10px;                    /* Espaciado interno uniforme */
+    margin-top: 5px;                  /* Separación superior */
+    border: 1px solid #ccc;           /* Borde gris claro */
+    border-radius: 5px;               /* Bordes redondeados */
+    box-sizing: border-box;           /* Mantiene tamaño fijo con padding incluido */
+    font-size: 14px;                  /* Tamaño de letra uniforme */
 }
 
+/* ===============================
+   6. Botón de enviar
+   =============================== */
 button {
-    margin-top: 15px;
-    background: #3498db;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    margin-top: 15px;                 /* Más espacio arriba que los inputs */
+    background: #3498db;              /* Azul principal */
+    color: white;                     /* Texto blanco */
+    border: none;                     /* Sin borde extra */
+    cursor: pointer;                  /* Cursor de "mano" al pasar encima */
+    transition: background 0.3s ease; /* Animación suave al cambiar color */
 }
 
+/* Efecto hover sobre el botón */
 button:hover {
-    background: #2980b9;
+    background: #2980b9;              /* Azul más oscuro al pasar el mouse */
 }
 
+/* ===============================
+   7. Resultado de la predicción
+   =============================== */
 #resultado {
-    margin-top: 20px;
-    font-size: 18px;
-    color: #27ae60;
-    font-weight: bold;
+    margin-top: 20px;                 /* Separación superior */
+    font-size: 18px;                  /* Texto más grande */
+    color: #27ae60;                   /* Verde de éxito */
+    font-weight: bold;                /* Texto en negrita */
 }
