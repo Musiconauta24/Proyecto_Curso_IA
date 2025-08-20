@@ -3,7 +3,7 @@ import joblib, numpy as np, os, math
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Modelo.modelo import CModelo  # 👈 Import necesario
+from Modelo.modelo import CModelo
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
@@ -36,9 +36,9 @@ def predict():
     except ValueError:
         return jsonify({"error": "Los valores deben ser numéricos"}), 400
 
-    # 🚨 Validaciones de rango
-    if not (50 <= lluvia <= 500):
-        return jsonify({"error": "La lluvia debe estar entre 50 y 500 mm"}), 400
+    # Validaciones de rango
+    if not (50 <= lluvia <= 600):
+        return jsonify({"error": "La Precipitación mensual debe estar entre 50 y 600 mm"}), 400
 
     if not (15 <= temperatura <= 40):
         return jsonify({"error": "La temperatura debe estar entre 15°C y 40°C"}), 400

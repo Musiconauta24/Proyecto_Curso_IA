@@ -85,7 +85,7 @@ plt.show()
 
 
 # ===============================
-# Procesar DENGUE conservando Mes y Edad
+# Procesar DENGUE conservando Mes 
 # ===============================
 
 # Normalizar columnas
@@ -102,16 +102,6 @@ df_dengue = dengue[['FECHA REPORTE', 'MES REPORTE', 'MUNICIPIO REPORTE', 'EDAD']
 df_dengue['MES_NUM'] = df_dengue['MES REPORTE'].map(meses_map)
 df_dengue['Fecha'] = pd.to_datetime(dict(year=df_dengue['FECHA REPORTE'], month=df_dengue['MES_NUM'], day=1))
 
-# Agrupar casos y edad (promedio)
-df_dengue_group = (
-    df_dengue.groupby(['MUNICIPIO REPORTE', 'Fecha'])
-    .agg(
-        Casos_Dengue=('EDAD', 'count'),   # Conteo de casos
-        Edad=('EDAD', 'mean')             # Edad promedio en ese mes
-    )
-    .reset_index()
-)
-
 # Crear todas las combinaciones posibles de municipio y fecha
 fechas_completas = pd.date_range(start='2018-01-01', end='2023-12-01', freq='MS')
 municipios = dengue['MUNICIPIO REPORTE'].unique()
@@ -119,8 +109,10 @@ idx = pd.MultiIndex.from_product([municipios, fechas_completas], names=['MUNICIP
 
 # Reindexar y rellenar datos
 df_dengue_group = (
-    df_dengue_group.set_index(['MUNICIPIO REPORTE', 'Fecha'])
-    .reindex(idx)
+    df_dengue.groupby(['MUNICIPIO REPORTE', 'Fecha'])
+    .agg(
+        Casos_Dengue=('EDAD', 'count')   # Conteo de casos
+    )
     .reset_index()
 )
 
@@ -162,8 +154,8 @@ for estacion, df_estacion in lluvia.groupby("NombreEstacion"):
     )
     df_estacion["NombreEstacion"] = estacion
     
-    # Reemplazar ceros por NaN
-    df_estacion["Valor"] = df_estacion["Valor"].replace(0, np.nan)
+    # Reemplazar valores fuera de rango por NaN
+    df_estacion["Valor"] = df_estacion["Valor"].mask(df_estacion["Valor"] < 30, np.nan)
     
     # Interpolación (sólo si no es MARACAIBO, se maneja después)
     if estacion != "MARACAIBO [4403000112]":
@@ -444,13 +436,20 @@ df_final = df_final.merge(promedios_temp, on='Mes_Num', how='left')
 print(df_final.head())
 
 # Crear variables con rezago de 1 mes por municipio
+# Crear variables con rezago de 1 mes por municipio
 df_final = df_final.sort_values(["MUNICIPIO REPORTE", "Fecha"])
 
-df_final["Lluvia_mm_lag1"] = df_final.groupby("MUNICIPIO REPORTE")["Lluvia_mm"].shift(1)
-df_final["Temperatura_lag1"] = df_final.groupby("MUNICIPIO REPORTE")["Temperatura"].shift(1)
+def lag_circular(x):
+    shifted = x.shift(1)
+    # Reemplazar el primer NaN con el último valor disponible (diciembre 2023)
+    shifted.iloc[0] = x.iloc[-1]
+    return shifted
+
+df_final["Lluvia_mm_lag1"] = df_final.groupby("MUNICIPIO REPORTE")["Lluvia_mm"].transform(lag_circular)
+df_final["Temperatura_lag1"] = df_final.groupby("MUNICIPIO REPORTE")["Temperatura"].transform(lag_circular)
 
 # Matriz de correlación con los valores del mes anterior
-correlacion_matriz = df_final[['Casos_Dengue', 'Lluvia_mm_lag1', 'Temperatura_lag1', 'Poblacion', 'Edad', 'Mes_Num']].corr()
+correlacion_matriz = df_final[['Casos_Dengue', 'Lluvia_mm_lag1', 'Temperatura_lag1', 'Poblacion', 'Mes_Num']].corr()
 
 # Graficar el mapa de calor
 sns.heatmap(correlacion_matriz, annot=True, cmap='coolwarm')
