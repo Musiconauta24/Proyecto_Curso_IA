@@ -1,18 +1,18 @@
 from flask import Flask, request, jsonify, render_template
-import joblib
-import numpy as np
-import os
-import math
-import pandas as pd
+import joblib, numpy as np, os, math
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Cargar el modelo entrenado
-model = joblib.load("./Modelo/modelo_dengue_mejorado.pkl")  # ruta ajustada
+from Modelo.modelo import CModelo  # 👈 Import necesario
 
-# le decimos a Flask dónde está la carpeta templates
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
 
-app = Flask(__name__, template_folder=TEMPLATES_DIR)
+app = Flask(__name__, template_folder=TEMPLATES_DIR, static_folder=STATIC_DIR, static_url_path="/static")
+
+# Carga del modelo
+modelo = joblib.load(os.path.join(BASE_DIR, "Modelo", "modelo_dengue_mejorado.pkl"))
 
 @app.route('/')
 def home():
@@ -22,30 +22,23 @@ def home():
 def predict():
     data = request.get_json()
 
-    # Validar entradas
-    required_fields = ["Lluvia_mm_lag1", "Temperatura_lag1", "Poblacion", "Mes_Num"]
-    for field in required_fields:
-        if field not in data:
-            return jsonify({"error": f"Falta el campo requerido: {field}"}), 400
+    required = ["Lluvia_mm_lag1", "Temperatura_lag1", "Poblacion", "Mes_Num"]
+    for f in required:
+        if f not in data:
+            return jsonify({"error": f"Falta el campo requerido: {f}"}), 400
 
-    # Orden correcto según el entrenamiento
-    columnas = ["Poblacion", "Mes_Num", "Lluvia_mm_lag1", "Temperatura_lag1"]
+    X_input = np.array([[
+        float(data["Poblacion"]),
+        int(data["Mes_Num"]),
+        float(data["Temperatura_lag1"])
+    ]])
 
-    # Crear DataFrame con orden correcto
-    entrada = pd.DataFrame([{
-        "Poblacion": float(data["Poblacion"]),
-        "Mes_Num": int(data["Mes_Num"]),
-        "Lluvia_mm_lag1": float(data["Lluvia_mm_lag1"]),
-        "Temperatura_lag1": float(data["Temperatura_lag1"])
-    }])[columnas]
+    lluvia_input = [float(data["Lluvia_mm_lag1"])]
 
-    # Predicción
-    prediccion = model.predict(entrada)[0]
-    prediccion = abs(math.floor(prediccion))  # entero positivo redondeado hacia abajo
+    yhat = modelo.predict(X_input, lluvia_input)[0]
+    yhat = abs(math.floor(yhat))  # entero y positivo
 
-    return jsonify({
-        "prediccion_casos_dengue": int(prediccion)
-    })
+    return jsonify({"prediccion_casos_dengue": yhat})
 
 if __name__ == '__main__':
     app.run(debug=True)

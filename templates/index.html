@@ -1,158 +1,136 @@
+<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Predicción de Casos de Dengue</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f9f9f9;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #2c3e50;
-        }
-        form {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            max-width: 400px;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        select, input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            margin-top: 15px;
-            padding: 10px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #2980b9;
-        }
-        #resultado {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #27ae60;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Predicción de Casos de Dengue</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Predicción de Casos de Dengue</h1>
-    <form id="formulario">
-        <label for="municipio">Municipio:</label>
-        <select id="municipio" name="municipio" required>
-            <option value="">Seleccione un municipio</option>
-            <option value="FLORENCIA">Florencia</option>
-            <option value="SAN VICENTE DEL CAGUAN">San Vicente del Caguán</option>
-            <option value="CARTAGENA DELCHAIRA">Cartagena del Chairá</option>
-            <option value="EL PAUJIL">El Paujil</option>
-            <option value="SOLANO">Solano</option>
-            <option value="CURILLO">Curillo</option>
-            <option value="PUERTO RICO">Puerto Rico</option>
-            <option value="SAN JOSE DEL FRAGUA">San José del Fragua</option>
-            <option value="MORELIA">Morelia</option>
-            <option value="SOLITA">Solita</option>
-            <option value="BELEN DE LOS ANDAQUIES">Belén de los Andaquíes</option>
-            <option value="LA MONTANITA">La Montañita</option>
-            <option value="EL DONCELLO">El Doncello</option>
-            <option value="ALBANIA">Albania</option>
-            <option value="VALPARAISO">Valparaíso</option>
-            <option value="MILAN">Milán</option>
-        </select>
+  <h1>Predicción de Casos de Dengue en el departamento de Caquetá</h1>
 
-        <label for="Lluvia_mm_lag1">Lluvia del mes anterior (mm):</label>
-        <input type="number" id="Lluvia_mm_lag1" name="Lluvia_mm_lag1" step="0.1" required>
+  <form id="formulario">
+    <!-- 1. Municipio -->
+    <label for="municipio">Municipio:</label>
+    <select id="municipio" name="municipio" required>
+      <option value="">Seleccione un municipio</option>
+      <option value="FLORENCIA">Florencia</option>
+      <option value="SAN VICENTE DEL CAGUAN">San Vicente del Caguán</option>
+      <option value="CARTAGENA DELCHAIRA">Cartagena del Chairá</option>
+      <option value="EL PAUJIL">El Paujil</option>
+      <option value="SOLANO">Solano</option>
+      <option value="CURILLO">Curillo</option>
+      <option value="PUERTO RICO">Puerto Rico</option>
+      <option value="SAN JOSE DEL FRAGUA">San José del Fragua</option>
+      <option value="MORELIA">Morelia</option>
+      <option value="SOLITA">Solita</option>
+      <option value="BELEN DE LOS ANDAQUIES">Belén de los Andaquíes</option>
+      <option value="LA MONTANITA">La Montañita</option>
+      <option value="EL DONCELLO">El Doncello</option>
+      <option value="ALBANIA">Albania</option>
+      <option value="VALPARAISO">Valparaíso</option>
+      <option value="MILAN">Milán</option>
+    </select>
 
-        <label for="Temperatura_lag1">Temperatura del mes anterior (°C):</label>
-        <input type="number" id="Temperatura_lag1" name="Temperatura_lag1" step="0.1" required>
+    <!-- 2. Mes -->
+    <label for="Mes_Num">Mes:</label>
+    <select id="Mes_Num" name="Mes_Num" required>
+      <option value="">Seleccione un mes</option>
+      <option value="1">Enero</option>
+      <option value="2">Febrero</option>
+      <option value="3">Marzo</option>
+      <option value="4">Abril</option>
+      <option value="5">Mayo</option>
+      <option value="6">Junio</option>
+      <option value="7">Julio</option>
+      <option value="8">Agosto</option>
+      <option value="9">Septiembre</option>
+      <option value="10">Octubre</option>
+      <option value="11">Noviembre</option>
+      <option value="12">Diciembre</option>
+    </select>
 
-        <label for="Mes_Num">Mes (1 = Enero, 12 = Diciembre):</label>
-        <input type="number" id="Mes_Num" name="Mes_Num" min="1" max="12" required>
+    <!-- 3. Lluvias -->
+    <label for="Lluvia_mm_lag1">Lluvia del mes anterior (mm):</label>
+    <input type="number" id="Lluvia_mm_lag1" name="Lluvia_mm_lag1" step="0.1" required />
 
-        <button type="submit">Predecir</button>
-    </form>
+    <!-- 4. Temperatura -->
+    <label for="Temperatura_lag1">Temperatura del mes anterior (°C):</label>
+    <input type="number" id="Temperatura_lag1" name="Temperatura_lag1" step="0.1" required />
 
-    <div id="resultado"></div>
+    <button type="submit">Predecir</button>
+  </form>
 
-    <script>
-        // Diccionario de municipios con su población
-        const poblaciones = {
-            "ALBANIA": 6432,
-            "BELEN DE LOS ANDAQUIES": 11601,
-            "CARTAGENA DELCHAIRA": 33908,
-            "CURILLO": 11737,
-            "EL DONCELLO": 22183,
-            "EL PAUJIL": 20528,
-            "FLORENCIA": 175395,
-            "LA MONTANITA": 23789,
-            "MILAN": 11774,
-            "MORELIA": 3836,
-            "PUERTO RICO": 33447,
-            "SAN JOSE DEL FRAGUA": 15029,
-            "SAN VICENTE DEL CAGUAN": 69214,
-            "SOLANO": 24131,
-            "SOLITA": 9143,
-            "VALPARAISO": 11687
-        };
+  <div id="resultado"></div>
 
-        document.getElementById("formulario").addEventListener("submit", async function(e) {
-            e.preventDefault();
+  <script>
+    // Poblaciones por municipio
+    const poblaciones = {
+      "ALBANIA": 6432, "BELEN DE LOS ANDAQUIES": 11601, "CARTAGENA DELCHAIRA": 33908,
+      "CURILLO": 11737, "EL DONCELLO": 22183, "EL PAUJIL": 20528, "FLORENCIA": 175395,
+      "LA MONTANITA": 23789, "MILAN": 11774, "MORELIA": 3836, "PUERTO RICO": 33447,
+      "SAN JOSE DEL FRAGUA": 15029, "SAN VICENTE DEL CAGUAN": 69214, "SOLANO": 24131,
+      "SOLITA": 9143, "VALPARAISO": 11687
+    };
 
-            const municipio = document.getElementById("municipio").value;
-            const mes = parseInt(document.getElementById("Mes_Num").value);
+    // Diccionario de meses
+    const meses = {
+      1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril", 5: "Mayo", 6: "Junio",
+      7: "Julio", 8: "Agosto", 9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
+    };
 
-            if (!municipio || !(municipio in poblaciones)) {
-                document.getElementById("resultado").innerHTML =
-                    `<span style="color:red;">Debe seleccionar un municipio válido</span>`;
-                return;
-            }
+    document.getElementById("formulario").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-            const datos = {
-                Lluvia_mm_lag1: parseFloat(document.getElementById("Lluvia_mm_lag1").value),
-                Temperatura_lag1: parseFloat(document.getElementById("Temperatura_lag1").value),
-                Poblacion: poblaciones[municipio],
-                Mes_Num: parseInt(document.getElementById("Mes_Num").value)
-            };
+      const municipio = document.getElementById("municipio").value;
+      const mesNum = parseInt(document.getElementById("Mes_Num").value, 10);
 
-            try {
-                const response = await fetch("http://127.0.0.1:5000/predict", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(datos)
-                });
+      if (!municipio || !(municipio in poblaciones)) {
+        document.getElementById("resultado").innerHTML =
+          `<span style="color:red;">Debe seleccionar un municipio válido</span>`;
+        return;
+      }
 
-                const result = await response.json();
+      if (!mesNum || !(mesNum in meses)) {
+        document.getElementById("resultado").innerHTML =
+          `<span style="color:red;">Debe seleccionar un mes válido</span>`;
+        return;
+      }
 
-                if (result.error) {
-                    document.getElementById("resultado").innerHTML = 
-                        `<span style="color:red;">Error: ${result.error}</span>`;
-                } else {
-                    document.getElementById("resultado").innerHTML = 
-                        `✅ Municipio: <b>${municipio}</b><br>
-                         📊 Mes del año: <b>${mes}</b><br> 
-                         🔮 Predicción de casos de dengue: <b>${result.prediccion_casos_dengue}</b>`;
-                }
-            } catch (error) {
-                document.getElementById("resultado").innerHTML = 
-                    `<span style="color:red;">Error en la conexión con la API</span>`;
-            }
+      const datos = {
+        Lluvia_mm_lag1: parseFloat(document.getElementById("Lluvia_mm_lag1").value),
+        Temperatura_lag1: parseFloat(document.getElementById("Temperatura_lag1").value),
+        Poblacion: poblaciones[municipio],
+        Mes_Num: mesNum
+      };
+
+      try {
+        const resp = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos)
         });
-    </script>
+        const result = await resp.json();
+
+        const pred =
+          result.prediccion_casos_dengue ??
+          result.prediccion ??
+          result["Prediccion de casos dedengue"];
+
+        if (result.error) {
+          document.getElementById("resultado").innerHTML =
+            `<span style="color:red;">Error: ${result.error}</span>`;
+        } else {
+          document.getElementById("resultado").innerHTML =
+            `✅ Municipio: <b>${municipio}</b><br>
+             📊 Mes: <b>${meses[mesNum]}</b><br>
+             🔮 Predicción de casos de dengue: <b>${pred}</b>`;
+        }
+      } catch (err) {
+        document.getElementById("resultado").innerHTML =
+          `<span style="color:red;">Error en la conexión con la API</span>`;
+      }
+    });
+  </script>
 </body>
 </html>
