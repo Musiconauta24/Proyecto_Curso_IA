@@ -78,3 +78,59 @@ button:hover {
     color: #27ae60;                   /* Verde de éxito */
     font-weight: bold;                /* Texto en negrita */
 }
+
+/* ===============================
+   8. Layout de dos columnas (form + imagen)
+   =============================== */
+.contenedor {
+  display: flex;
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+/* Columna izquierda: reusa tu tarjeta del form */
+.col-izquierda {
+  flex: 1 1 420px;
+}
+
+/* Evita que el form centrado rompa el layout de dos columnas */
+.contenedor form {
+  margin: 50;
+}
+
+/* Columna derecha: panel para la imagen */
+.col-derecha.panel-imagen {
+  flex: 1 1 320px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.col-derecha.panel-imagen img {
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid #e3e3e3;
+}
+
+.municipio-label {
+  margin-top: 20px;
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+/* Responsive: apilar en pantallas estrechas */
+@media (max-width: 900px) {
+  .contenedor {
+    flex-direction: column;
+  }
+  .col-izquierda, .col-derecha {
+    flex: 1 1 auto;
+  }
+}

@@ -9,58 +9,77 @@
 <body>
   <h1>Predicción de Casos de Dengue en el departamento de Caquetá</h1>
 
-  <form id="formulario">
-    <!-- 1. Municipio -->
-    <label for="municipio">Municipio:</label>
-    <select id="municipio" name="municipio" required>
-      <option value="">Seleccione un municipio</option>
-      <option value="CAQUETÁ">Todos los municipios</option>
-      <option value="FLORENCIA">Florencia</option>
-      <option value="SAN VICENTE DEL CAGUAN">San Vicente del Caguán</option>
-      <option value="CARTAGENA DELCHAIRA">Cartagena del Chairá</option>
-      <option value="EL PAUJIL">El Paujil</option>
-      <option value="SOLANO">Solano</option>
-      <option value="CURILLO">Curillo</option>
-      <option value="PUERTO RICO">Puerto Rico</option>
-      <option value="SAN JOSE DEL FRAGUA">San José del Fragua</option>
-      <option value="MORELIA">Morelia</option>
-      <option value="SOLITA">Solita</option>
-      <option value="BELEN DE LOS ANDAQUIES">Belén de los Andaquíes</option>
-      <option value="LA MONTANITA">La Montañita</option>
-      <option value="EL DONCELLO">El Doncello</option>
-      <option value="ALBANIA">Albania</option>
-      <option value="VALPARAISO">Valparaíso</option>
-      <option value="MILAN">Milán</option>
-    </select>
+  <div class="contenedor">
+    <!-- Columna izquierda: formulario -->
+    <div class="col-izquierda">
+      <form id="formulario">
+        <!-- 1. Municipio -->
+        <label for="municipio">Municipio:</label>
+        <select id="municipio" name="municipio" required>
+          <option value="">Seleccione un municipio</option>
+          <option value="CAQUETÁ">Todos los municipios</option>
+          <option value="FLORENCIA">Florencia</option>
+          <option value="SAN VICENTE DEL CAGUAN">San Vicente del Caguán</option>
+          <option value="CARTAGENA DELCHAIRA">Cartagena del Chairá</option>
+          <option value="EL PAUJIL">El Paujil</option>
+          <option value="SOLANO">Solano</option>
+          <option value="CURILLO">Curillo</option>
+          <option value="PUERTO RICO">Puerto Rico</option>
+          <option value="SAN JOSE DEL FRAGUA">San José del Fragua</option>
+          <option value="MORELIA">Morelia</option>
+          <option value="SOLITA">Solita</option>
+          <option value="BELEN DE LOS ANDAQUIES">Belén de los Andaquíes</option>
+          <option value="LA MONTANITA">La Montañita</option>
+          <option value="EL DONCELLO">El Doncello</option>
+          <option value="ALBANIA">Albania</option>
+          <option value="VALPARAISO">Valparaíso</option>
+          <option value="MILAN">Milán</option>
+        </select>
 
-    <!-- 2. Mes -->
-    <label for="Mes_Num">Mes:</label>
-    <select id="Mes_Num" name="Mes_Num" required>
-      <option value="">Seleccione un mes</option>
-      <option value="1">Enero</option>
-      <option value="2">Febrero</option>
-      <option value="3">Marzo</option>
-      <option value="4">Abril</option>
-      <option value="5">Mayo</option>
-      <option value="6">Junio</option>
-      <option value="7">Julio</option>
-      <option value="8">Agosto</option>
-      <option value="9">Septiembre</option>
-      <option value="10">Octubre</option>
-      <option value="11">Noviembre</option>
-      <option value="12">Diciembre</option>
-    </select>
+        <!-- 2. Mes -->
+        <label for="Mes_Num">Mes:</label>
+        <select id="Mes_Num" name="Mes_Num" required>
+          <option value="">Seleccione un mes</option>
+          <option value="1">Enero</option>
+          <option value="2">Febrero</option>
+          <option value="3">Marzo</option>
+          <option value="4">Abril</option>
+          <option value="5">Mayo</option>
+          <option value="6">Junio</option>
+          <option value="7">Julio</option>
+          <option value="8">Agosto</option>
+          <option value="9">Septiembre</option>
+          <option value="10">Octubre</option>
+          <option value="11">Noviembre</option>
+          <option value="12">Diciembre</option>
+        </select>
 
-    <!-- 3. Lluvias -->
-    <label for="Lluvia_mm_lag1">Lluvia del mes anterior (mm):</label>
-    <input type="number" id="Lluvia_mm_lag1" name="Lluvia_mm_lag1" step="0.1" required />
+        <!-- 3. Lluvias -->
+        <label for="Lluvia_mm_lag1">Lluvia del mes anterior (mm):</label>
+        <input type="number" id="Lluvia_mm_lag1" name="Lluvia_mm_lag1" step="0.1" required />
 
-    <!-- 4. Temperatura -->
-    <label for="Temperatura_lag1">Temperatura del mes anterior (°C):</label>
-    <input type="number" id="Temperatura_lag1" name="Temperatura_lag1" step="0.1" required />
+        <!-- 4. Temperatura -->
+        <label for="Temperatura_lag1">Temperatura del mes anterior (°C):</label>
+        <input type="number" id="Temperatura_lag1" name="Temperatura_lag1" step="0.1" required />
 
-    <button type="submit">Predecir</button>
-  </form>
+        <button type="submit">Predecir</button>
+      </form>
+
+      <div id="resultado"></div>
+    </div>
+
+  <!-- Columna derecha: imagen dinámica del municipio -->
+  <aside class="col-derecha panel-imagen">
+    <h2>Seleccione un municipio</h2>
+    <img
+      id="mapaMunicipio"
+      src="{{ url_for('static', filename='img/default.png') }}"
+      alt="Mapa del municipio seleccionado"
+    />
+    <p id="municipioLabel" class="municipio-label">🟩 Municipio seleccionado</p>
+  </aside>
+</div>
+
 
   <div id="resultado"></div>
 
@@ -133,5 +152,51 @@
       }
     });
   </script>
+  <script>
+  // Base de imágenes (carpeta en /static/img/)
+  const BASE_IMG = "{{ url_for('static', filename='img/') }}";
+
+  // Mapeo explícito municipio -> nombre de archivo (sin tildes/espacios)
+  const imagenesMunicipio = {
+    "CAQUETÁ": "caqueta.png",
+    "FLORENCIA": "florencia.png",
+    "SAN VICENTE DEL CAGUAN": "san_vicente_del_caguan.png",
+    "CARTAGENA DELCHAIRA": "cartagena_delchaira.png",
+    "EL PAUJIL": "el_paujil.png",
+    "SOLANO": "solano.png",
+    "CURILLO": "curillo.png",
+    "PUERTO RICO": "puerto_rico.png",
+    "SAN JOSE DEL FRAGUA": "san_jose_del_fragua.png",
+    "MORELIA": "morelia.png",
+    "SOLITA": "solita.png",
+    "BELEN DE LOS ANDAQUIES": "belen_de_los_andaquies.png",
+    "LA MONTANITA": "la_montanita.png",
+    "EL DONCELLO": "el_doncello.png",
+    "ALBANIA": "albania.png",
+    "VALPARAISO": "valparaiso.png",
+    "MILAN": "milan.png"
+  };
+
+  function actualizarImagenMunicipio(valorMunicipio) {
+    const img = document.getElementById("mapaMunicipio");
+    const lbl = document.getElementById("municipioLabel");
+    const archivo = imagenesMunicipio[valorMunicipio] || "default.png";
+
+    img.src = BASE_IMG + archivo;
+    lbl.textContent = valorMunicipio ? valorMunicipio : "Seleccione un municipio";
+  }
+
+  // Cambia la imagen cuando el usuario elige un municipio
+  document.getElementById("municipio").addEventListener("change", function() {
+    actualizarImagenMunicipio(this.value);
+  });
+
+  // Opcional: inicializa cuando carga la página si ya hay un valor seleccionado
+  window.addEventListener("DOMContentLoaded", () => {
+    const inicial = document.getElementById("municipio").value;
+    if (inicial) actualizarImagenMunicipio(inicial);
+  });
+</script>
+
 </body>
 </html>
