@@ -78,18 +78,35 @@ def predict():
         return jsonify({"error": "La temperatura debe estar entre 15°C y 40°C"}), 400
 
     # ===============================
-    # 7. Preparar entrada para el modelo
+    # 7. Suma de modelo para todo el departamento
     # ===============================
-    entrada = np.array([[poblacion, mes, temperatura]])  # Vector de entrada con las variables
-    yhat = modelo.predict(entrada, [lluvia])[0]          # Llamada al modelo híbrido con lluvia
-    yhat = abs(math.floor(yhat))                         # Aseguramos entero positivo
+    municipios_poblacion = {
+        6432, 11601, 33908, 11737, 22183, 20528, 175395, 23789, 11774, 3836, 33447, 15029, 69214, 24131, 9143, 11687
+    }
 
-    # Retornamos la predicción en formato JSON
-    return jsonify({"prediccion_casos_dengue": yhat})
+    if poblacion == 0:  # Caso especial: todo el departamento
+        suma_total = 0
+        for pob in municipios_poblacion:
+            entrada = np.array([[float(pob), float(mes), float(temperatura)]], dtype=float)
+            yhat_mun = modelo.predict(entrada, [lluvia])[0]
+            yhat_mun = max(0, int(round(yhat_mun)))
+            suma_total += yhat_mun
+        return jsonify({"prediccion_casos_dengue": suma_total})
+    else:
+
+        # ===============================
+        # 8. Preparar entrada para el modelo invividual por municipio
+        # ===============================
+        entrada = np.array([[poblacion, mes, temperatura]])  # Vector de entrada con las variables
+        yhat = modelo.predict(entrada, [lluvia])[0]          # Llamada al modelo híbrido con lluvia
+        yhat = max(0, int(round(yhat)))                      # asegura enteros y no permite negativos
+
+        # Retornamos la predicción en formato JSON
+        return jsonify({"prediccion_casos_dengue": yhat})
 
 
 # ===============================
-# 8. Ejecutar servidor
+# 9. Ejecutar servidor
 # ===============================
 if __name__ == '__main__':
     app.run(debug=True)
