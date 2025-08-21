@@ -2,6 +2,8 @@ import pandas as pd # Manejo de datos tabulares
 import matplotlib.pyplot as plt # Gráficas
 import seaborn as sns # Mapas de calor y visualización avanzada
 import numpy as np # Operaciones numéricas
+from mpl_toolkits.mplot3d import Axes3D # Gráficas 3D
+from sklearn.preprocessing import LabelEncoder # Codificación de etiquetas
 
 
 # ==============================================================
@@ -344,6 +346,42 @@ def lag_circular(x):
 df_final["Lluvia_mm_lag1"] = df_final.groupby("MUNICIPIO REPORTE")["Lluvia_mm"].transform(lag_circular)
 df_final["Temperatura_lag1"] = df_final.groupby("MUNICIPIO REPORTE")["Temperatura"].transform(lag_circular)
 
+# ===============================
+# 9. Cluster de datos
+# ===============================
+# 1. Codificar municipios en números
+le = LabelEncoder()
+df_final["Municipio_Code"] = le.fit_transform(df_final["MUNICIPIO REPORTE"])
+print (df_final)
+
+
+# 2. Crear gráfico 3D
+fig = plt.figure(figsize=(10,7))
+ax = fig.add_subplot(111, projection='3d')
+
+# Graficamos con color en función del municipio
+sc = ax.scatter(
+    df_final["Municipio_Code"],   # X = Municipio (codificado)
+    df_final["Casos_Dengue"],     # Y = Casos de Dengue
+    df_final["Lluvia_mm"],        # Z = Lluvia
+    c=df_final["Municipio_Code"], # Color según municipio
+    cmap="viridis",
+    s=50
+)
+
+# 3. Etiquetas de los ejes
+ax.set_xlabel("")
+ax.set_ylabel("Casos de Dengue")
+ax.set_zlabel("Lluvia (mm)")
+plt.title("Relación Municipio - Casos de Dengue - Lluvia")
+
+# 4. Agregar nombres reales de municipios en X
+ax.set_xticks(df_final["Municipio_Code"].unique())
+ax.set_xticklabels(le.inverse_transform(df_final["Municipio_Code"].unique()), rotation=45, ha="right")
+
+# Mostrar gráfico
+plt.show()
+
 # Correlaciones
 correlacion_matriz = df_final[['Casos_Dengue','Lluvia_mm_lag1','Temperatura_lag1','Poblacion','Mes_Num']].corr()
 sns.heatmap(correlacion_matriz, annot=True, cmap='coolwarm')
@@ -352,7 +390,7 @@ plt.show()
 
 
 # ==============================================================
-# 9. EXPORTACIÓN FINAL
+# 10. EXPORTACIÓN FINAL
 # ==============================================================
 
 df_final.to_csv("dengue_mensual.csv", index=False, encoding="utf-8")
