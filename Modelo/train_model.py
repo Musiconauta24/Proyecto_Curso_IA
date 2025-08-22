@@ -24,7 +24,7 @@ df_dengue_group = pd.read_csv("./dengue_mensual.csv")
 # ===============================
 # 2. Selección de variables
 # ===============================
-features = ['Poblacion', 'Mes_Num', 'Temperatura_lag1']  # Variables independientes (sin lluvia)
+features = ['Poblacion', 'Mes_Num', 'Temperatura_lag1']  # Variables independientes
 X = df_dengue_group[features].fillna(0)
 y = df_dengue_group['Casos_Dengue']  # Variable dependiente (lo que queremos predecir)
 

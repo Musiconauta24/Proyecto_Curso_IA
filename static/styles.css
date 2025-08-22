@@ -5,7 +5,7 @@ body {
     font-family: Arial, sans-serif;   /* Fuente limpia y legible */
     background: #f9f9f9;              /* Color de fondo gris muy claro */
     margin: 0;                        /* Quitamos márgenes por defecto */
-    padding: 20px;                    /* Espaciado interno */
+    padding: 10px 20px 20px 20px;  /* Reducimos el padding top de 20px a 10px */
 }
 
 /* ===============================
@@ -14,6 +14,8 @@ body {
 h1 {
     color: #2c3e50;                   /* Azul oscuro */
     text-align: center;               /* Centrado en pantalla */
+    margin-top: 10px;   /* En lugar del margen por defecto (~20px) */
+    margin-bottom: 20px;
 }
 
 /* ===============================
@@ -49,7 +51,7 @@ button {
     border: 1px solid #ccc;           /* Borde gris claro */
     border-radius: 5px;               /* Bordes redondeados */
     box-sizing: border-box;           /* Mantiene tamaño fijo con padding incluido */
-    font-size: 14px;                  /* Tamaño de letra uniforme */
+    font-size: 15px;                  /* Tamaño de letra uniforme */
 }
 
 /* ===============================
@@ -84,7 +86,7 @@ button:hover {
    =============================== */
 .contenedor {
   display: flex;
-  gap: 30px;
+  gap: 100px;
   max-width: 1100px;
   margin: 0 auto;
   align-items: flex-start;
@@ -92,35 +94,35 @@ button:hover {
 
 /* Columna izquierda: reusa tu tarjeta del form */
 .col-izquierda {
-  flex: 1 1 420px;
+  flex: 1 1 320px;
 }
 
 /* Evita que el form centrado rompa el layout de dos columnas */
 .contenedor form {
-  margin: 50;
+  margin: 100;
 }
 
 /* Columna derecha: panel para la imagen */
 .col-derecha.panel-imagen {
-  flex: 1 1 320px;
+  flex: 3 5 10px;
   background: #fff;
-  padding: 20px;
+  padding: 0px 20px;
   border-radius: 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 5px rgba(0,0,0,0.1);
   text-align: center;
 }
 
 .col-derecha.panel-imagen img {
   width: 100%;
   height: auto;
-  max-height: 360px;
+  max-height: 370px;
   object-fit: contain;
   border-radius: 10px;
   border: 1px solid #e3e3e3;
 }
 
 .municipio-label {
-  margin-top: 20px;
+  margin-top: 15px;
   color: #2c3e50;
   font-weight: bold;
 }

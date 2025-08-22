@@ -296,13 +296,25 @@ print(df_final.head(20))
 # 7. VARIABLES ADICIONALES: POBLACIÓN Y TEMPERATURA
 # ==============================================================
 
-# Población por municipio
+# Agregar la población de cada municipio para su análisis
+# Diccionario de población en miles para mejor predicción adaptado a los nombres de df_final
 poblacion_municipios = {
-    "ALBANIA":6432,"BELEN DE LOS ANDAQUIES":11601,"CARTAGENA DELCHAIRA":33908,
-    "CURILLO":11737,"EL DONCELLO":22183,"EL PAUJIL":20528,"FLORENCIA":175395,
-    "LA MONTANITA":23789,"MILAN":11774,"MORELIA":3836,"PUERTO RICO":33447,
-    "SAN JOSE DEL FRAGUA":15029,"SAN VICENTE DEL CAGUAN":69214,"SOLANO":24131,
-    "SOLITA":9143,"VALPARAISO":11687
+    "ALBANIA": 6.432,
+    "BELEN DE LOS ANDAQUIES": 11.601,
+    "CARTAGENA DELCHAIRA": 33.908, 
+    "CURILLO": 11.737,
+    "EL DONCELLO": 22.183,
+    "EL PAUJIL": 20.528,
+    "FLORENCIA": 175.395,
+    "LA MONTANITA": 23.789,
+    "MILAN": 11.774,
+    "MORELIA": 3.836,
+    "PUERTO RICO": 33.447,
+    "SAN JOSE DEL FRAGUA": 15.029,
+    "SAN VICENTE DEL CAGUAN": 69.214,
+    "SOLANO": 24.131,
+    "SOLITA": 9.143,
+    "VALPARAISO": 11.687
 }
 df_final["Poblacion"] = df_final["MUNICIPIO REPORTE"].map(poblacion_municipios)
 print(df_final[["MUNICIPIO REPORTE","Poblacion"]].drop_duplicates())
